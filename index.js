@@ -1,4 +1,4 @@
-const POLLS_DIR = "polls/";
+const POLLS_DIR = "/polls/";
 
 async function loadPolls() {
   const list = document.getElementById("poll-list");
