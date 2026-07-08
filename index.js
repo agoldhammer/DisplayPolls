@@ -11,6 +11,9 @@ const CAPTIONS = {
   "german_polls_institutes.png": "Aktuelle Umfragen nach Institut",
   "german_polls_coalition_trends.png": "Koalitionen im Trend seit der Bundestagswahl 2025",
   "german_polls_institute_trends.png": "Parteien im Trend nach Institut",
+  "italian_polls.png": "Sondaggi elettorali italiani: intenzioni di voto",
+  "italian_polls_recent.png": "Sondaggi elettorali italiani: ultimi 12 mesi",
+  "italian_polls_institutes.png": "Sondaggi recenti per istituto",
 };
 
 function captionFor(name) {
@@ -41,6 +44,7 @@ function renderGroup(list, names) {
 async function loadPolls() {
   const frenchList = document.getElementById("french-poll-list");
   const germanList = document.getElementById("german-poll-list");
+  const italianList = document.getElementById("italian-poll-list");
   const status = document.getElementById("status");
 
   let response;
@@ -71,9 +75,11 @@ async function loadPolls() {
 
   const frenchNames = names.filter(name => /^france/i.test(name));
   const germanNames = names.filter(name => /^german/i.test(name));
+  const italianNames = names.filter(name => /^italian/i.test(name));
 
   renderGroup(frenchList, frenchNames);
   renderGroup(germanList, germanNames);
+  renderGroup(italianList, italianNames);
 }
 
 loadPolls();
