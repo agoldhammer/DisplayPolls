@@ -1,7 +1,46 @@
 const POLLS_DIR = "/polls/";
 
+// Chart images have no embedded caption we can read in the browser, so the
+// caption for each known file is taken from that chart's actual title, as
+// set in the generating script (frelec/visualize_polls.py, GerElec/main.py).
+const CAPTIONS = {
+  "France-latest.png": "Présidentielle 2027 — intentions de vote, 1er tour",
+  "german_polls_bundestag.png": "Sonntagsfrage: Wenn am Sonntag Bundestagswahl wäre …",
+  "german_polls_recent.png": "Sonntagsfrage seit der Bundestagswahl 2025",
+  "german_polls_coalitions.png": "Mögliche Koalitionen: rechnerische Mehrheiten",
+  "german_polls_institutes.png": "Aktuelle Umfragen nach Institut",
+  "german_polls_coalition_trends.png": "Koalitionen im Trend seit der Bundestagswahl 2025",
+  "german_polls_institute_trends.png": "Parteien im Trend nach Institut",
+};
+
+function captionFor(name) {
+  return CAPTIONS[name] || name;
+}
+
+function renderGroup(list, names) {
+  for (const name of names) {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = POLLS_DIR + name;
+
+    const img = document.createElement("img");
+    img.src = POLLS_DIR + name;
+    img.alt = captionFor(name);
+    img.loading = "lazy";
+
+    const span = document.createElement("span");
+    span.textContent = captionFor(name);
+
+    a.appendChild(img);
+    a.appendChild(span);
+    li.appendChild(a);
+    list.appendChild(li);
+  }
+}
+
 async function loadPolls() {
-  const list = document.getElementById("poll-list");
+  const frenchList = document.getElementById("french-poll-list");
+  const germanList = document.getElementById("german-poll-list");
   const status = document.getElementById("status");
 
   let response;
@@ -30,24 +69,11 @@ async function loadPolls() {
     return;
   }
 
-  for (const name of names) {
-    const li = document.createElement("li");
-    const a = document.createElement("a");
-    a.href = POLLS_DIR + name;
+  const frenchNames = names.filter(name => /^france/i.test(name));
+  const germanNames = names.filter(name => /^german/i.test(name));
 
-    const img = document.createElement("img");
-    img.src = POLLS_DIR + name;
-    img.alt = name;
-    img.loading = "lazy";
-
-    const span = document.createElement("span");
-    span.textContent = name;
-
-    a.appendChild(img);
-    a.appendChild(span);
-    li.appendChild(a);
-    list.appendChild(li);
-  }
+  renderGroup(frenchList, frenchNames);
+  renderGroup(germanList, germanNames);
 }
 
 loadPolls();

@@ -16,6 +16,15 @@
     font-size: 1.4rem;
     margin-bottom: 1rem;
   }
+  h2 {
+    font-size: 1.15rem;
+    margin: 1.5rem 0 1rem;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 2rem 0;
+  }
   ul {
     list-style: none;
     padding: 0;
@@ -43,7 +52,6 @@
     display: block;
     margin-top: 0.3rem;
     font-size: 0.8rem;
-    word-break: break-all;
   }
   li a:hover span {
     text-decoration: underline;
@@ -55,7 +63,15 @@
 </head>
 <body>
 <h1>Polls</h1>
-<ul id="poll-list"></ul>
+
+<h2>French Polling</h2>
+<ul id="french-poll-list"></ul>
+
+<hr>
+
+<h2>German Polling</h2>
+<ul id="german-poll-list"></ul>
+
 <p id="status"></p>
 
 <script src="index.js"></script>
