@@ -14,6 +14,10 @@ const CAPTIONS = {
   "italian_polls.png": "Sondaggi elettorali italiani: intenzioni di voto",
   "italian_polls_recent.png": "Sondaggi elettorali italiani: ultimi 12 mesi",
   "italian_polls_institutes.png": "Sondaggi recenti per istituto",
+  "uk_polls_national.png": "Westminster voting intention since the 2024 general election",
+  "uk_polls_recent.png": "Westminster voting intention, last 6 months",
+  "uk_polls_pollsters.png": "Current polls by pollster",
+  "uk_polls_pollster_trends.png": "Party support in trend by pollster",
 };
 
 function captionFor(name) {
@@ -43,17 +47,7 @@ function renderGroup(list, names) {
     const li = document.createElement("li");
     const a = document.createElement("a");
     a.href = POLLS_DIR + name;
-
-    const img = document.createElement("img");
-    img.src = POLLS_DIR + name;
-    img.alt = captionFor(name);
-    img.loading = "lazy";
-
-    const span = document.createElement("span");
-    span.textContent = captionFor(name);
-
-    a.appendChild(img);
-    a.appendChild(span);
+    a.textContent = captionFor(name);
     li.appendChild(a);
     list.appendChild(li);
   }
@@ -63,6 +57,7 @@ async function loadPolls() {
   const frenchList = document.getElementById("french-poll-list");
   const germanList = document.getElementById("german-poll-list");
   const italianList = document.getElementById("italian-poll-list");
+  const ukList = document.getElementById("uk-poll-list");
   const status = document.getElementById("status");
 
   let response;
@@ -102,10 +97,12 @@ async function loadPolls() {
   const frenchNames = names.filter(name => /^france/i.test(name));
   const germanNames = names.filter(name => /^german/i.test(name));
   const italianNames = names.filter(name => /^italian/i.test(name));
+  const ukNames = names.filter(name => /^uk_polls/i.test(name));
 
   renderGroup(frenchList, frenchNames);
   renderGroup(germanList, germanNames);
   renderGroup(italianList, italianNames);
+  renderGroup(ukList, ukNames);
 }
 
 loadPolls();
