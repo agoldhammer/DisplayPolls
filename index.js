@@ -4,7 +4,16 @@ const POLLS_DIR = "/polls/";
 // caption for each known file is taken from that chart's actual title, as
 // set in the generating script (frelec/visualize_polls.py, GerElec/main.py).
 const CAPTIONS = {
-  "France-latest.png": "Présidentielle 2027 — intentions de vote, 1er tour",
+  "france-first_round.png": "Présidentielle 2027 — intentions de vote, 1er tour",
+  "france-first_round_dark.png": "Présidentielle 2027 — intentions de vote, 1er tour (sombre)",
+  "france-first_round_recent.png": "Présidentielle 2027 — 1er tour, tendance récente",
+  "france-first_round_recent_dark.png": "Présidentielle 2027 — 1er tour, tendance récente (sombre)",
+  "france-first_round_pollsters.png": "Présidentielle 2027 — 1er tour, sondages par institut",
+  "france-first_round_pollsters_dark.png": "Présidentielle 2027 — 1er tour, sondages par institut (sombre)",
+  "france-second_round_trend.png": "Présidentielle 2027 — second tour, hypothèses face au RN",
+  "france-second_round_trend_dark.png": "Présidentielle 2027 — second tour, hypothèses face au RN (sombre)",
+  "france-second_round_snapshot.png": "Présidentielle 2027 — second tour, dernier sondage par hypothèse",
+  "france-second_round_snapshot_dark.png": "Présidentielle 2027 — second tour, dernier sondage par hypothèse (sombre)",
   "german_polls_bundestag.png": "Sonntagsfrage: Wenn am Sonntag Bundestagswahl wäre …",
   "german_polls_recent.png": "Sonntagsfrage seit der Bundestagswahl 2025",
   "german_polls_coalitions.png": "Mögliche Koalitionen: rechnerische Mehrheiten",
