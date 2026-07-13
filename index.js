@@ -39,23 +39,25 @@ const MONTHS = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
 // nginx's autoindex plain listing puts "DD-Mon-YYYY HH:MM" after each <a> tag
 // as sibling text, not an attribute, so this scans the raw HTML rather than
 // the parsed DOM.
-function latestModifiedDate(html) {
-  const re = /<a href="[^"]+\.png">[^<]*<\/a>\s+(\d{2})-(\w{3})-(\d{4})\s+(\d{2}):(\d{2})/g;
-  let latest = null;
+function modifiedDates(html) {
+  const re = /<a href="([^"]+\.png)">[^<]*<\/a>\s+(\d{2})-(\w{3})-(\d{4})\s+(\d{2}):(\d{2})/g;
+  const dates = new Map();
   let match;
   while ((match = re.exec(html)) !== null) {
-    const [, day, mon, year, hour, min] = match;
-    const date = new Date(+year, MONTHS[mon], +day, +hour, +min);
-    if (!latest || date > latest) latest = date;
+    const [, href, day, mon, year, hour, min] = match;
+    dates.set(decodeURIComponent(href), new Date(+year, MONTHS[mon], +day, +hour, +min));
   }
-  return latest;
+  return dates;
 }
 
-function renderGroup(list, names) {
+function renderGroup(list, names, dates) {
   for (const name of names) {
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.href = POLLS_DIR + name;
+    // The ?v= mtime changes whenever a chart is redeployed, so a browser
+    // can never reuse a cached copy of an older version of the chart.
+    const modified = dates.get(name);
+    a.href = POLLS_DIR + name + (modified ? "?v=" + modified.getTime() : "");
     a.textContent = captionFor(name);
     li.appendChild(a);
     list.appendChild(li);
@@ -71,7 +73,7 @@ async function loadPolls() {
 
   let response;
   try {
-    response = await fetch(POLLS_DIR);
+    response = await fetch(POLLS_DIR, { cache: "no-cache" });
   } catch (err) {
     status.textContent = "Could not reach " + POLLS_DIR + " (" + err.message + ")";
     return;
@@ -90,7 +92,8 @@ async function loadPolls() {
     .filter(href => href.toLowerCase().endsWith(".png"))
     .sort();
 
-  const lastUpdated = latestModifiedDate(html);
+  const dates = modifiedDates(html);
+  const lastUpdated = dates.size ? new Date(Math.max(...dates.values())) : null;
   if (lastUpdated) {
     document.getElementById("last-updated").textContent =
       "(last updated on " +
@@ -108,10 +111,10 @@ async function loadPolls() {
   const italianNames = names.filter(name => /^italian/i.test(name));
   const ukNames = names.filter(name => /^uk_polls/i.test(name));
 
-  renderGroup(frenchList, frenchNames);
-  renderGroup(germanList, germanNames);
-  renderGroup(italianList, italianNames);
-  renderGroup(ukList, ukNames);
+  renderGroup(frenchList, frenchNames, dates);
+  renderGroup(germanList, germanNames, dates);
+  renderGroup(italianList, italianNames, dates);
+  renderGroup(ukList, ukNames, dates);
 }
 
 loadPolls();
