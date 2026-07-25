@@ -58,6 +58,10 @@ function renderGroup(list, names, dates) {
     // can never reuse a cached copy of an older version of the chart.
     const modified = dates.get(name);
     a.href = POLLS_DIR + name + (modified ? "?v=" + modified.getTime() : "");
+    // Open each chart in its own tab so the listing stays put -- with a dozen
+    // charts, going back and forth from a single tab is the common case.
+    a.target = "_blank";
+    a.rel = "noopener";
     a.textContent = captionFor(name);
     li.appendChild(a);
     list.appendChild(li);
