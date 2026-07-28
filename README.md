@@ -37,7 +37,13 @@ backend. Both are in `sites-available/noozeconf` on con1, not here.
 
 ## Deploying
 
-Copy the changed file to its row in the table above, e.g.
+`git push` deploys both rows of the table above automatically, via the
+`pre-push` hook in `.git/hooks/`. A failed copy warns but does not block the
+push, so watch its output -- a warning means GitHub has the change and con1
+does not.
 
-    scp www/index.html con1:/var/www/html/index.html
+The hook is not version controlled, so a fresh clone does not have it and must
+either recreate it or deploy by hand:
+
     scp index.html index.js con1:/var/www/pollsite/
+    scp www/index.html con1:/var/www/html/index.html
