@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>ghmr.net</title>
+<style>
+  /* Each of the three destinations carries its own hue. The rule under the
+     masthead is those same three hues in the same order as the entries
+     below it, so the divider states the structure of the site rather than
+     decorating it. */
+  :root {
+    --prose:  #453a8f;
+    --data:   #17635a;
+    --news:   #973250;
+
+    --paper:  #faf8f4;
+    --ink:    #1a1b20;
+    --muted:  #6e6a63;
+    --rule:   #ddd8cf;
+    --tint:   0.06;
+
+    --display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+               "URW Palladio L", Georgia, serif;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+            "Liberation Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --prose:  #9b8ff0;
+      --data:   #4fb3a3;
+      --news:   #e08099;
+
+      --paper:  #14151a;
+      --ink:    #ece9e3;
+      --muted:  #97928a;
+      --rule:   #2c2e36;
+      --tint:   0.12;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: var(--body);
+    background: var(--paper);
+    color: var(--ink);
+    margin: 0;
+    padding: clamp(2rem, 8vw, 5.5rem) 1.25rem 3rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 46rem;
+    margin: 0 auto;
+  }
+
+  /* The three-part rule: one segment per destination, same order as below. */
+  .spine {
+    display: flex;
+    height: 3px;
+    margin-bottom: 2.25rem;
+  }
+  .spine span { flex: 1; }
+  .spine span:nth-child(1) { background: var(--prose); }
+  .spine span:nth-child(2) { background: var(--data); }
+  .spine span:nth-child(3) { background: var(--news); }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(2.4rem, 7vw, 3.6rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin: 0;
+  }
+
+  .intro {
+    color: var(--muted);
+    font-size: 1.02rem;
+    margin: 0.6rem 0 clamp(2.5rem, 6vw, 3.5rem);
+    max-width: 32rem;
+  }
+
+  .entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .entries li { border-bottom: 1px solid var(--rule); }
+
+  .entry {
+    --hue: var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 0.35rem 1.5rem;
+    padding: 1.6rem 1rem 1.6rem 1.35rem;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    transition: background-color 160ms ease;
+  }
+
+  li:nth-child(1) .entry { --hue: var(--prose); }
+  li:nth-child(2) .entry { --hue: var(--data); }
+  li:nth-child(3) .entry { --hue: var(--news); }
+
+  /* The hue bar sits flush with the left edge and grows on hover, so the
+     pointer's target and the color cue are the same object. */
+  .entry::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--hue);
+    transition: width 160ms ease;
+  }
+
+  .entry:hover,
+  .entry:focus-visible {
+    background: color-mix(in srgb, var(--hue) calc(var(--tint) * 100%), transparent);
+  }
+  .entry:hover::before,
+  .entry:focus-visible::before { width: 7px; }
+
+  .entry:focus-visible {
+    outline: 2px solid var(--hue);
+    outline-offset: -2px;
+  }
+
+  .name {
+    font-family: var(--display);
+    font-size: clamp(1.35rem, 3.4vw, 1.85rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--hue);
+  }
+
+  .host {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .what {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 34rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .entry, .entry::before { transition: none; }
+  }
+
+  @media (max-width: 30rem) {
+    .entry { grid-template-columns: 1fr; }
+    .host { grid-row: 3; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="spine" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <h1>ghmr.net</h1>
+  <p class="intro">Writing, European polling data, and multilingual news.</p>
+
+  <ul class="entries">
+    <li>
+      <a class="entry" href="https://art.ghmr.net/">
+        <span class="name">Art Goldhammer</span>
+        <span class="host">art.ghmr.net</span>
+        <span class="what">Personal page.</span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="https://polls.ghmr.net/">
+        <span class="name">European voter polls</span>
+        <span class="host">polls.ghmr.net</span>
+        <span class="what">Voting-intention charts for France, Germany, Italy,
+          and the United Kingdom, updated daily.</span>
+      </a>
+    </li>
+    <li>
+      <a class="entry" href="https://news.ghmr.net/">
+        <span class="name">Multilingual news aggregator</span>
+        <span class="host">news.ghmr.net</span>
+        <span class="what">Search headlines across languages.</span>
+      </a>
+    </li>
+  </ul>
+
+</div>
+</body>
+</html>
