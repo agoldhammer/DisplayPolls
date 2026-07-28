@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Deploys this repo's two front ends to con1 whenever it is pushed:
+#
+#   index.html, index.js -> /var/www/pollsite/  (polls.ghmr.net)
+#   www/index.html       -> /var/www/html/      (www.ghmr.net landing page)
+#
+# Both used to live in /var/www/html; the poll site moved to /var/www/pollsite
+# on 2026-07-28 when it got its own vhost, and /var/www/html became the landing
+# page. Deploy failures only warn (not block the push) since GitHub and con1 are
+# independent concerns.
+#
+# Active only where core.hooksPath is set to this directory -- see the README.
+
+REPO_DIR="$(git rev-parse --show-toplevel)"
+ok=0
+
+echo "Deploying poll site to con1:/var/www/pollsite/..." >&2
+if scp -q "$REPO_DIR/index.html" "$REPO_DIR/index.js" con1:/var/www/pollsite/; then
+  echo "  poll site OK" >&2
+else
+  echo "  WARNING: poll site deploy failed -- polls.ghmr.net is stale." >&2
+  ok=1
+fi
+
+echo "Deploying landing page to con1:/var/www/html/..." >&2
+if scp -q "$REPO_DIR/www/index.html" con1:/var/www/html/index.html; then
+  echo "  landing page OK" >&2
+else
+  echo "  WARNING: landing page deploy failed -- www.ghmr.net is stale." >&2
+  ok=1
+fi
+
+[ "$ok" -eq 0 ] && echo "Deploy to con1 succeeded." >&2
+
+exit 0

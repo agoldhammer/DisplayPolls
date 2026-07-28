@@ -38,12 +38,18 @@ backend. Both are in `sites-available/noozeconf` on con1, not here.
 ## Deploying
 
 `git push` deploys both rows of the table above automatically, via the
-`pre-push` hook in `.git/hooks/`. A failed copy warns but does not block the
+`pre-push` hook in `.githooks/`. A failed copy warns but does not block the
 push, so watch its output -- a warning means GitHub has the change and con1
 does not.
 
-The hook is not version controlled, so a fresh clone does not have it and must
-either recreate it or deploy by hand:
+The hook is tracked, but git only runs hooks from a directory it has been
+pointed at, and that setting is per-clone. **In a fresh clone, run this once:**
 
-    scp index.html index.js con1:/var/www/pollsite/
-    scp www/index.html con1:/var/www/html/index.html
+    git config core.hooksPath .githooks
+
+Until you do, pushing deploys nothing and says nothing. To check a clone is
+wired up, `git config --get core.hooksPath` should print `.githooks`.
+
+To deploy without pushing, run the hook directly -- it takes no arguments:
+
+    .githooks/pre-push
