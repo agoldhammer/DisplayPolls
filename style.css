@@ -80,6 +80,40 @@ body {
   margin-left: auto;
 }
 
+/* Hero. The source image is a full scan of a two-panel document; the band
+   crop below keeps the middle of it, where the stamped dates on the left and
+   the "CARTE ÉLECTORALE" title on the right both fall. Cropping here rather
+   than in the file means the shipped image stays a straight copy of the
+   Commons original. Its own paper is white, so it keeps a white backing in
+   the dark theme instead of being tinted. */
+.hero {
+  margin: 0 0 1.75rem;
+}
+
+.hero img {
+  display: block;
+  width: 100%;
+  height: clamp(110px, 24vw, 190px);
+  object-fit: cover;
+  object-position: center 52%;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.hero figcaption {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.45rem;
+}
+
+.hero figcaption a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+}
+.hero figcaption a:hover { color: var(--link); }
+
 h2 {
   font-size: 1.15rem;
   margin: 1.5rem 0 1rem;

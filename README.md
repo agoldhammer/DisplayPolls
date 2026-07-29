@@ -6,7 +6,7 @@ deployed.
 
 | in this repo | deployed to | serves |
 |---|---|---|
-| `index.html`, `index.js`, `chart.html`, `chart.js`, `captions.js`, `style.css` | `/var/www/pollsite/` | `polls.ghmr.net` -- the poll-chart index and viewer |
+| `index.html`, `index.js`, `chart.html`, `chart.js`, `captions.js`, `style.css`, `hero-carte-electorale.jpg` | `/var/www/pollsite/` | `polls.ghmr.net` -- the poll-chart index and viewer |
 | `www/index.html` | `/var/www/html/` | `www.ghmr.net` -- landing page linking the three sites |
 
 ## polls.ghmr.net
@@ -22,6 +22,17 @@ Two pages, both carrying the same "Aggregated European Polls" masthead from
   `img` parameter is accepted only if it is a plain `*.png` filename, so a
   crafted link cannot point the page at an arbitrary URL. Direct
   `/polls/<png>` URLs still work for anyone who bookmarked one.
+
+The index hero, `hero-carte-electorale.jpg`, is a scan of a French *carte
+électorale* stamped at twelve elections between 2012 and 2015 -- [the Commons
+original][hero], public domain twice over (`PD-JORF`, the card being an
+official text, plus a `PD-self` release by the uploader), so it carries no
+attribution obligation; the credit under it is courtesy, not a licence term.
+The file is the unmodified 960px Commons rendering: the banner crop is done in
+CSS (`.hero img`, `object-position`), not baked into the image, so reframing it
+is a one-line change and the file stays byte-identical to its source.
+
+[hero]: https://commons.wikimedia.org/wiki/File:Stamped_voter_registration_card_in_France.jpg
 
 `index.js` builds the chart list at load time by fetching `/polls/` and
 parsing nginx's plain autoindex listing, so the vhost must keep
