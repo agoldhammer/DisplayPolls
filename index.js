@@ -1,37 +1,5 @@
+// CAPTIONS and captionFor() come from captions.js, which chart.js loads too.
 const POLLS_DIR = "/polls/";
-
-// Chart images have no embedded caption we can read in the browser, so the
-// caption for each known file is taken from that chart's actual title, as
-// set in the generating script (frelec/visualize_polls.py, GerElec/main.py).
-const CAPTIONS = {
-  "france-first_round.png": "Présidentielle 2027 — intentions de vote, 1er tour",
-  "france-first_round_dark.png": "Présidentielle 2027 — intentions de vote, 1er tour (sombre)",
-  "france-first_round_recent.png": "Présidentielle 2027 — 1er tour, tendance récente",
-  "france-first_round_recent_dark.png": "Présidentielle 2027 — 1er tour, tendance récente (sombre)",
-  "france-first_round_pollsters.png": "Présidentielle 2027 — 1er tour, sondages par institut",
-  "france-first_round_pollsters_dark.png": "Présidentielle 2027 — 1er tour, sondages par institut (sombre)",
-  "france-second_round_trend.png": "Présidentielle 2027 — second tour, hypothèses face au RN",
-  "france-second_round_trend_dark.png": "Présidentielle 2027 — second tour, hypothèses face au RN (sombre)",
-  "france-second_round_snapshot.png": "Présidentielle 2027 — second tour, dernier sondage par hypothèse",
-  "france-second_round_snapshot_dark.png": "Présidentielle 2027 — second tour, dernier sondage par hypothèse (sombre)",
-  "german_polls_bundestag.png": "Sonntagsfrage: Wenn am Sonntag Bundestagswahl wäre …",
-  "german_polls_recent.png": "Sonntagsfrage seit der Bundestagswahl 2025",
-  "german_polls_coalitions.png": "Mögliche Koalitionen: rechnerische Mehrheiten",
-  "german_polls_institutes.png": "Aktuelle Umfragen nach Institut",
-  "german_polls_coalition_trends.png": "Koalitionen im Trend seit der Bundestagswahl 2025",
-  "german_polls_institute_trends.png": "Parteien im Trend nach Institut",
-  "italian_polls.png": "Sondaggi elettorali italiani: intenzioni di voto",
-  "italian_polls_recent.png": "Sondaggi elettorali italiani: ultimi 12 mesi",
-  "italian_polls_institutes.png": "Sondaggi recenti per istituto",
-  "uk_polls_national.png": "Westminster voting intention since the 2024 general election",
-  "uk_polls_recent.png": "Westminster voting intention, last 6 months",
-  "uk_polls_pollsters.png": "Current polls by pollster",
-  "uk_polls_pollster_trends.png": "Party support in trend by pollster",
-};
-
-function captionFor(name) {
-  return CAPTIONS[name] || name;
-}
 
 const MONTHS = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
   Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
@@ -54,14 +22,13 @@ function renderGroup(list, names, dates) {
   for (const name of names) {
     const li = document.createElement("li");
     const a = document.createElement("a");
-    // The ?v= mtime changes whenever a chart is redeployed, so a browser
-    // can never reuse a cached copy of an older version of the chart.
+    // Charts open in the viewer page, in this same tab: the viewer carries the
+    // site header and a link back here, so nothing is lost by not opening a
+    // second tab. The ?v= mtime changes whenever a chart is redeployed and is
+    // passed through to the image, so a stale copy is never served from cache.
     const modified = dates.get(name);
-    a.href = POLLS_DIR + name + (modified ? "?v=" + modified.getTime() : "");
-    // Open each chart in its own tab so the listing stays put -- with a dozen
-    // charts, going back and forth from a single tab is the common case.
-    a.target = "_blank";
-    a.rel = "noopener";
+    a.href = "chart.html?img=" + encodeURIComponent(name) +
+      (modified ? "&v=" + modified.getTime() : "");
     a.textContent = captionFor(name);
     li.appendChild(a);
     list.appendChild(li);

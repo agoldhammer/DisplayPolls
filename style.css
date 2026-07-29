@@ -1,0 +1,145 @@
+/* Shared by index.html and chart.html: the masthead has to look identical on
+   both, so it is defined once here rather than copied into each page. */
+
+:root {
+  --paper: #fff;
+  --ink: #222;
+  --muted: #777;
+  --rule: #ddd;
+  --link: #0645ad;
+  --accent: #17635a;
+  --error: #a00;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14151a;
+    --ink: #ece9e3;
+    --muted: #97928a;
+    --rule: #2c2e36;
+    --link: #7ba7ee;
+    --accent: #4fb3a3;
+    --error: #e08099;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  margin: 0;
+  padding: 0 1rem 3rem;
+  line-height: 1.5;
+}
+
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Masthead. On the index it is title only; on a chart page a back link sits
+   to its left, and the title shifts right to make room for it. */
+.masthead {
+  border-bottom: 2px solid var(--accent);
+  margin-bottom: 1.5rem;
+  padding: 1.25rem 0 0.75rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.masthead h1 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.back {
+  color: var(--link);
+  text-decoration: none;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+.back:hover,
+.back:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#last-updated {
+  font-size: 0.85rem;
+  font-weight: normal;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 1.5rem 0 1rem;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 2rem 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 0.4rem 0;
+}
+
+li a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+li a:hover {
+  text-decoration: underline;
+}
+
+#status {
+  color: var(--error);
+}
+
+/* Chart page. The image is capped at the viewport height so a tall chart
+   still fits alongside the masthead without scrolling. */
+.chart-page .page {
+  max-width: 1100px;
+}
+
+#chart-caption {
+  font-size: 1.05rem;
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+#chart-image {
+  display: block;
+  max-width: 100%;
+  max-height: 80vh;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+@media (max-width: 30rem) {
+  .masthead { flex-wrap: wrap; gap: 0.5rem; }
+  #last-updated { margin-left: 0; width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back { transition: none; }
+}

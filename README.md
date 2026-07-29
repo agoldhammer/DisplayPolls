@@ -6,10 +6,22 @@ deployed.
 
 | in this repo | deployed to | serves |
 |---|---|---|
-| `index.html`, `index.js` | `/var/www/pollsite/` | `polls.ghmr.net` -- the poll-chart index |
+| `index.html`, `index.js`, `chart.html`, `chart.js`, `captions.js`, `style.css` | `/var/www/pollsite/` | `polls.ghmr.net` -- the poll-chart index and viewer |
 | `www/index.html` | `/var/www/html/` | `www.ghmr.net` -- landing page linking the three sites |
 
 ## polls.ghmr.net
+
+Two pages, both carrying the same "Aggregated European Polls" masthead from
+`style.css`:
+
+- `index.html` / `index.js` -- the listing, grouped by country.
+- `chart.html` / `chart.js` -- the viewer for one chart, reached as
+  `chart.html?img=<png>&v=<mtime>`. The listing links here in the same tab
+  rather than straight at the PNG, because a bare image has no masthead and
+  no way back; the viewer's masthead carries a back link to the index. The
+  `img` parameter is accepted only if it is a plain `*.png` filename, so a
+  crafted link cannot point the page at an arbitrary URL. Direct
+  `/polls/<png>` URLs still work for anyone who bookmarked one.
 
 `index.js` builds the chart list at load time by fetching `/polls/` and
 parsing nginx's plain autoindex listing, so the vhost must keep
@@ -17,11 +29,13 @@ parsing nginx's plain autoindex listing, so the vhost must keep
 themselves are not in this repo: they are PNGs written into
 `/var/www/pollsite/polls/` by the daily poll-update cron from the frelec,
 GerElec, ItalPolls, and UKPolls repos. Each chart link carries a `?v=<mtime>`
-taken from the listing, so a redeployed chart is never served from cache.
+taken from the listing, which the viewer passes through to the image request,
+so a redeployed chart is never served from cache.
 
-Captions live in the `CAPTIONS` map in `index.js`, keyed by PNG filename and
-copied from each chart's real title. A chart whose file is renamed upstream
-needs its key updated here or it falls back to the bare filename.
+Captions live in the `CAPTIONS` map in `captions.js`, loaded by both pages,
+keyed by PNG filename and copied from each chart's real title. A chart whose
+file is renamed upstream needs its key updated here or it falls back to the
+bare filename.
 
 ## www.ghmr.net
 

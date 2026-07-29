@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Deploys this repo's two front ends to con1 whenever it is pushed:
 #
-#   index.html, index.js -> /var/www/pollsite/  (polls.ghmr.net)
+#   index.html, index.js, chart.html, chart.js, captions.js, style.css
+#                        -> /var/www/pollsite/  (polls.ghmr.net)
 #   www/index.html       -> /var/www/html/      (www.ghmr.net landing page)
 #
 # Both used to live in /var/www/html; the poll site moved to /var/www/pollsite
@@ -15,7 +16,10 @@ REPO_DIR="$(git rev-parse --show-toplevel)"
 ok=0
 
 echo "Deploying poll site to con1:/var/www/pollsite/..." >&2
-if scp -q "$REPO_DIR/index.html" "$REPO_DIR/index.js" con1:/var/www/pollsite/; then
+if scp -q "$REPO_DIR/index.html" "$REPO_DIR/index.js" \
+          "$REPO_DIR/chart.html" "$REPO_DIR/chart.js" \
+          "$REPO_DIR/captions.js" "$REPO_DIR/style.css" \
+          con1:/var/www/pollsite/; then
   echo "  poll site OK" >&2
 else
   echo "  WARNING: poll site deploy failed -- polls.ghmr.net is stale." >&2
