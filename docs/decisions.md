@@ -26,10 +26,16 @@ These came out of specific incidents below, but they apply to every run:
 1. **Sum the row.** When a poll cell is disputed or has changed upstream, add up
    the row's party shares. The variant that lands near 100 is the real number.
    Do this *before* asking anyone to check a source PDF. (2026-08-11)
-2. **A changed existing row is usually benign.** `{{TBA}}` or a blank filled in
-   with a number is an editor completing a poll, not a parser break. A published
-   *number* changing to a different number, or many rows shifting at once, is a
-   real problem — stop. (2026-08-09)
+2. **A changed existing row is usually benign — accept it without asking.**
+   `{{TBA}}` or a blank filled in with a number, a lumped Others split out, or a
+   published number corrected against the pollster's own tables, is an editor
+   emendation, not a parser break. Confirm it with rule 1 and by finding the
+   revision that touched the row, then take it and *report* it: the owner wants
+   these made autonomously and notified afterwards, with the reasoning.
+   (2026-08-16, superseding the stop-and-ask rule of 2026-08-09)
+2a. **Still stop for a structural break.** Many rows shifting at once, values
+   landing in the wrong columns, rows disappearing, sums moving *away* from 100,
+   or no revision that accounts for the change. (2026-08-09)
 3. **Prefer the current wikitext when it is the arithmetically consistent one**,
    even when it contradicts an earlier manual correction of ours. (2026-08-11)
 4. **Lab21 and Lab2101 are different institutes.** Never merge them. (2026-07-23)
@@ -198,6 +204,33 @@ agreed. **This is the general rule:** when a cell is disputed, sum the row's
 party shares and take the variant that lands near 100 — it usually settles the
 question without the source PDF, and it can override an earlier manual
 correction of ours.
+
+**2026-08-16 — Editor emendations are now accepted without asking**
+(`UKPolls f4081b0`, `scripts 24dafe4`)
+The 08-16 run stopped again, on two rows: JL Partners/Bloomberg (fieldwork
+1–3 Aug 2026) went Con 21→20, SNP blank→2, PC blank→1, Others 7→3, and
+Trajectory Partnership (fieldwork 5–14 May 2026) went Lab 24→26, Con 17→18,
+Ref 25→27, LD 10→11. Row sums moved 102→100 and 93→99, and the wikitext diff
+across revisions 1369538818–1369543935 shows a single editor (Jamie Eilat,
+15 Aug) re-reading the pollsters' own tables — updating each row's access-date
+and source URL alongside the numbers, and splitting JL Partners' lumped Others
+into SNP and PC. Accepted, with the two new polls behind them (Opinium/Observer
+10–12 Aug; Trajectory 5–12 Aug).
+
+That is the third time in a week the pipeline halted on what turned out to be a
+Wikipedia editor correcting a published poll against its source. The owner
+directed that this class be handled autonomously and reported afterwards, so the
+three Wikipedia-sourced prompts (`ukpolls`, `italpolls`, `frelec`) now **triage**
+an altered row instead of stopping: row-sum check plus the revision that touched
+the row. Editor emendation → accept, and name the correction in the commit
+message and in the emailed summary along with the assessment of why the editor
+made it. Structural break → still stop, unchanged: many rows shifting at once,
+values landing in the wrong columns, rows disappearing, sums moving *away* from
+100, or no revision accounting for the change. The distinction matters because
+the old blanket rule ("every existing row byte-for-byte unchanged") was written
+to catch a parser break, and a benign correction trips it identically.
+`gerelec` was deliberately left on the strict rule — it reads the DAWUM API,
+not Wikipedia, so there are no editor emendations to accept.
 
 ## Cron schedule and the update pipeline
 
