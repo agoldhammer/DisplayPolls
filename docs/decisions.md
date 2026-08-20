@@ -232,6 +232,47 @@ to catch a parser break, and a benign correction trips it identically.
 `gerelec` was deliberately left on the strict rule — it reads the DAWUM API,
 not Wikipedia, so there are no editor emendations to accept.
 
+**2026-08-20 — The French parser reads each sub-table's own header**
+(`frelec`, `scripts`)
+`parse_polls.py`'s `CANDIDATES` was one fixed, positional column list, but
+Wikipedia splits a year into dated sub-tables with **different** columns
+whenever a candidate enters or leaves the race: "Premier semestre 2026" has a
+Villepin column, "Second semestre 2026" does not. One list cannot be right for
+both, so a fresh parse of the second table shifted every value from Villepin
+rightward by one column. The committed rows for 7–10 July were hand-corrected
+back, which is why the CSV looked right while the parser stayed wrong — and why
+the 08-20 run flagged that the next batch of new polls in that section would
+need the same manual remap. The parser now reconstructs each table's header
+grid (honouring `rowspan`/`colspan`, since the header is portraits over
+names-and-parties with `Autre` spanning both) and derives that table's columns
+from it, so no remap is needed. `CANDIDATES` survives as the canonical CSV
+column order plus the registry of known candidates; a column set that differs
+from it is reported on stderr, and the frelec prompt's step 3 now tells the
+run what each of those lines means.
+
+Two behaviours fall out of that. `FIRST_ROUND_ALIASES` folds `LePen_RN` onto
+`RN` so the party's slot stays one series across the 2026-07-07
+placeholder→named switch (the second-round tables keep `LePen_RN` and
+`Bardella_RN` distinct on purpose — there the match-up identity is the point).
+And `route_other` sends an `Autre` value whose note names a candidate who
+*used* to have a column back into that column: Villepin is still polled, just
+folded into `Autre` with a `<br><small>` note, and leaving him there would
+break his series on the date the column was dropped. A note naming somebody
+who never had a column (Ruffin) stays in `Autre`, and a note in a candidate's
+*own* column is a substitution (`Glucksmann_PP=9.0 (Hollande (PS))`) and also
+stays put. Verified by re-parsing: the 77 rows of 2026 now come out identical
+to the committed CSV, and the second round is unchanged.
+
+**2026-08-20 — "Harris Interactive" folded back into "Harris"** (`frelec`)
+Found while verifying the above. The five 7–8 July rows called the institute
+"Harris Interactive" while the other eleven Harris rows called it "Harris",
+which is what the wikitext says for all sixteen; the long form was introduced
+by hand in `ca28433` alongside the column remap. It split one institute into
+two in `france-first_round_pollsters.png`, and it would have made every future
+daily run diff on those five rows forever and re-triage them as an unexplained
+change. Taking the source's spelling makes a fresh parse reproduce the CSV
+byte for byte, which is the property that keeps the daily diff meaningful.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
