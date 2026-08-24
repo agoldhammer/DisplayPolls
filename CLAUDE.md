@@ -23,3 +23,10 @@ and the `pre-push` deploy hook (including the one-time
 The charts themselves are not in this repo — they are PNGs written into
 `/var/www/pollsite/polls/` by the daily poll-update cron from the frelec,
 GerElec, ItalPolls and UKPolls repos under `~/Prog/`.
+
+Since 2026-08-24 that cron **runs on con1**, not on this workstation, and all
+five repos are cloned there too. The wrappers and prompts that drive it live in
+`~/Prog/scripts` **on con1** — that copy is the real one; the workstation's is
+historical and its cron entries are commented out. Anything here that deploys is
+host-aware: `/var/www/pollsite` existing locally means the machine is the web
+server, so the copy is a plain `cp -p` rather than an `scp` to `con1`.

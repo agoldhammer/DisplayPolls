@@ -67,6 +67,12 @@ backend. Both are in `sites-available/noozeconf` on con1, not here.
 push, so watch its output -- a warning means GitHub has the change and con1
 does not.
 
+The repo is cloned on con1 itself as well as on the workstation, so the hook is
+host-aware: it copies with `cp -p` where `/var/www/pollsite` exists locally
+(that directory is the web root, so having it means the machine *is* the web
+server) and `scp`s to the `con1` alias everywhere else. Both roots are owned by
+`agold`, so neither path needs sudo.
+
 The hook is tracked, but git only runs hooks from a directory it has been
 pointed at, and that setting is per-clone. **In a fresh clone, run this once:**
 

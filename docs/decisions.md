@@ -345,6 +345,37 @@ At the user's request. The four entries are now 8:30 / 8:35 / 8:40 / 8:45,
 first run at the new times on 2026-08-04; the commit keeps the catch-up
 runner's comment in step with the crontab.
 
+**2026-08-24 — The daily run moved off the workstation onto con1, at 04:15 UTC**
+(`scripts 71f92c0`)
+Cron on the WSL box only fires while WSL is up, which is why the `@reboot`
+catch-up existed at all and why a morning could simply be missed. con1 is up
+around the clock (586 days at the time of the move), so the four repos are now
+cloned there and the four cron entries live in con1's crontab; the workstation's
+entries are commented out and its `~/Prog/scripts` is a historical copy. **Edit
+the prompts and wrappers in `~/Prog/scripts` on con1 now, not here.** The
+`@reboot` catch-up came along as a safety net rather than a daily necessity.
+Nothing else about the pipeline changed: same wrapper, same 20h state-file
+guard, same per-repo prompts, same email-after-every-run.
+
+**Why the con1 cron lines look strange.** con1 runs `cron 3.0pl1-137ubuntu3`,
+which does **not** honour `CRON_TZ` — crontab(5)'s LIMITATIONS section says
+per-user timezones are ignored and every task runs in the system zone, which on
+con1 is `America/New_York`. Setting the system zone to UTC would have silently
+moved the two unrelated backup jobs sharing that crontab. So each job is
+scheduled at **both** candidate local hours and gated on the UTC hour actually
+being 04:
+
+    15 23,0 * * * [ "$(date -u +\%H)" = 04 ] && poll-update-run.sh frelec ...
+
+Under EDT the `00:15` slot is 04:15Z and runs while `23:15` is 03:15Z and is
+skipped; under EST it is the other way round. The start time therefore stays
+fixed in UTC across both DST switches without anything else in the crontab
+moving. `\%` is an escaped literal percent — cron reads a bare `%` as a newline.
+Verified on 2026-08-24 with a throwaway entry: cron delivered the escaped line
+intact, the gate took the right branch, and the job inherited the declared PATH.
+A crontab environment assignment applies only to the lines *after* it, which is
+why the `PATH=` line sits below the two backup jobs and leaves them alone.
+
 ## Server, nginx, and deploy
 
 con1 (Ubuntu 22.04, nginx, public IP 154.38.179.84) serves four vhosts:
@@ -415,6 +446,39 @@ nothing and says nothing. Deploy failures **warn but do not block the push**,
 since GitHub and con1 are independent concerns — a warning means GitHub has the
 change and con1 does not, so watch the output. To deploy without pushing, run
 `.githooks/pre-push` directly; it takes no arguments.
+
+**2026-08-24 — The five repos are checked out on con1, so "deploy" is a local
+copy there** (`DisplayPolls 20bc1d6`, `frelec 5fcb723`, `GerElec 58dc0c3`,
+`UKPolls e3a497d`, `scripts 71f92c0`)
+With the daily run moved to con1, every repo that used to `scp` to con1 is now
+*running on* con1, where the `con1` ssh alias does not exist and the web roots
+are ordinary local directories owned by `agold` (no sudo needed for either).
+Rather than fork the tooling per machine, everything that deploys is now
+host-aware, testing for `/var/www/pollsite` — its presence means this machine is
+the web server:
+
+- `.githooks/pre-push` picks `cp -p` or `scp` on that test. Both branches were
+  exercised on 2026-08-24, pushing from the workstation and running the hook
+  directly on con1.
+- Step 8 of all four poll prompts says plainly that the machine *is* the web
+  server and to use `cp -p`, never `scp`/`ssh con1`.
+- `claude.md` in frelec, GerElec and UKPolls said "the remote server is con1",
+  which was about to be wrong half the time; it now names the path and says
+  which side of the ssh boundary you are on, with `hostname` as the tiebreak.
+
+The clones use the **SSH** remote (`git@github.com:agoldhammer/...`) on con1
+even where the workstation uses HTTPS, because con1's existing key already
+authenticates to GitHub as `agoldhammer` and needs no credential helper. Verified
+by pushing all four of the above commits from con1.
+
+Two things had to be carried over by hand, since neither is in any GitHub repo:
+`~/Prog/scripts` (rsynced, git history and all) and the two gitignored Gmail
+secrets inside it. The headless `claude` sessions authenticate from a copy of the
+workstation's `~/.claude/.credentials.json`, alongside a minimal `~/.claude.json`
+holding just the account, `hasCompletedOnboarding`, and a pre-accepted trust
+dialog for each repo path so an unattended run can never block on one. **Both
+machines now share one refresh token** — if con1's sessions start failing to
+authenticate, that is the first thing to suspect.
 
 ## Front-end decisions
 
