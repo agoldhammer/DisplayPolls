@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploys this repo's two front ends to con1 whenever it is pushed:
+# Deploys this repo's two front ends whenever it is pushed:
 #
 #   index.html, index.js, chart.html, chart.js, captions.js, style.css,
 #   hero-carte-electorale.jpg
@@ -11,31 +11,58 @@
 # page. Deploy failures only warn (not block the push) since GitHub and con1 are
 # independent concerns.
 #
+# The repo is checked out on con1 itself as well as on the WSL workstation, so
+# the deploy is a local copy on the server and an scp from anywhere else. The
+# presence of /var/www/pollsite is the test: it is the web root, so having it
+# means this machine *is* the web server. Both roots are owned by agold, so
+# neither path needs sudo.
+#
 # Active only where core.hooksPath is set to this directory -- see the README.
 
 REPO_DIR="$(git rev-parse --show-toplevel)"
 ok=0
 
-echo "Deploying poll site to con1:/var/www/pollsite/..." >&2
-if scp -q "$REPO_DIR/index.html" "$REPO_DIR/index.js" \
-          "$REPO_DIR/chart.html" "$REPO_DIR/chart.js" \
-          "$REPO_DIR/captions.js" "$REPO_DIR/style.css" \
-          "$REPO_DIR/hero-carte-electorale.jpg" \
-          con1:/var/www/pollsite/; then
+if [ -d /var/www/pollsite ]; then
+  ON_SERVER=1
+  POLLSITE=/var/www/pollsite/
+  LANDING=/var/www/html/index.html
+  WHERE="locally"
+else
+  ON_SERVER=0
+  POLLSITE=con1:/var/www/pollsite/
+  LANDING=con1:/var/www/html/index.html
+  WHERE="to con1"
+fi
+
+copy() {  # copy <dest> <src>...
+  local dest="$1"; shift
+  if [ "$ON_SERVER" -eq 1 ]; then
+    cp -p "$@" "$dest"
+  else
+    scp -q "$@" "$dest"
+  fi
+}
+
+echo "Deploying poll site $WHERE to /var/www/pollsite/..." >&2
+if copy "$POLLSITE" \
+        "$REPO_DIR/index.html" "$REPO_DIR/index.js" \
+        "$REPO_DIR/chart.html" "$REPO_DIR/chart.js" \
+        "$REPO_DIR/captions.js" "$REPO_DIR/style.css" \
+        "$REPO_DIR/hero-carte-electorale.jpg"; then
   echo "  poll site OK" >&2
 else
   echo "  WARNING: poll site deploy failed -- polls.ghmr.net is stale." >&2
   ok=1
 fi
 
-echo "Deploying landing page to con1:/var/www/html/..." >&2
-if scp -q "$REPO_DIR/www/index.html" con1:/var/www/html/index.html; then
+echo "Deploying landing page $WHERE to /var/www/html/..." >&2
+if copy "$LANDING" "$REPO_DIR/www/index.html"; then
   echo "  landing page OK" >&2
 else
   echo "  WARNING: landing page deploy failed -- www.ghmr.net is stale." >&2
   ok=1
 fi
 
-[ "$ok" -eq 0 ] && echo "Deploy to con1 succeeded." >&2
+[ "$ok" -eq 0 ] && echo "Deploy succeeded." >&2
 
 exit 0
