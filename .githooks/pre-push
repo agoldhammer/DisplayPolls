@@ -43,7 +43,7 @@ copy() {  # copy <dest> <src>...
   fi
 }
 
-echo "Deploying poll site $WHERE to /var/www/pollsite/..." >&2
+echo "Deploying poll site $WHERE -> /var/www/pollsite/..." >&2
 if copy "$POLLSITE" \
         "$REPO_DIR/index.html" "$REPO_DIR/index.js" \
         "$REPO_DIR/chart.html" "$REPO_DIR/chart.js" \
@@ -55,7 +55,7 @@ else
   ok=1
 fi
 
-echo "Deploying landing page $WHERE to /var/www/html/..." >&2
+echo "Deploying landing page $WHERE -> /var/www/html/..." >&2
 if copy "$LANDING" "$REPO_DIR/www/index.html"; then
   echo "  landing page OK" >&2
 else
