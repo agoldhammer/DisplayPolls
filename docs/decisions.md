@@ -314,6 +314,27 @@ commit message and the emailed summary. The three other prompts were left
 alone — GerElec, ItalPolls and UKPolls chart parties, not named candidates, so
 a new series there is a different (and so far unseen) event.
 
+**2026-08-27 — Bardella's match-ups dropped from the runoff snapshot**
+(`frelec 9076b48`)
+Le Pen declared on 2026-07-07 and Bardella is no longer a candidate, so his
+duels describe a race nobody is in. The snapshot chart answers "how does each
+challenger stand today", so per the owner it now shows Le Pen match-ups only —
+twelve bars become seven. **This is standing, not a one-off.**
+
+Three things about the shape of it. The filter is a
+`SNAPSHOT_RN_CANDIDATES` tuple in `visualize_second_round.py`, not a hardcoded
+Bardella test, so the chart follows whoever the RN candidate is if this
+happens again. The rows stay in `polls_2027_second_round.csv` — this is a
+presentation decision, and a fresh parse still has to reproduce the CSV byte
+for byte or the daily diff stops meaning anything. And the **trend** chart
+keeps them: there each point is read against whoever the RN candidate was at
+the time, and dropping the Bardella era would truncate every challenger's
+history at July 2026, which is the opposite of what a trend chart is for.
+
+The snapshot's subtitle now names Le Pen and the date she declared, so a
+reader who remembers the Bardella duels can see why they are gone rather than
+wondering whether the chart broke.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
