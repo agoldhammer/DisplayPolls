@@ -306,10 +306,13 @@ which pair it names.
 
 **The owner directed that this class be handled without asking and reported
 afterwards**, the same standing arrangement as editor emendations
-(2026-08-16). The `frelec` prompt on con1 therefore needs the matching change
-— tell the run to add the slot and carry on instead of stopping — and until it
-gets that change, the next first-time challenger will stall the pipeline in
-exactly the same way.
+(2026-08-16). The `frelec` prompt on con1 carries the matching change
+(`scripts 647a5d4`): step 5 now tells the run to give a first-time candidate a
+slot and carry on, warns that the validator's all-pairs FAIL names pre-existing
+pairs rather than the new one, and requires the color and its scores in the
+commit message and the emailed summary. The three other prompts were left
+alone — GerElec, ItalPolls and UKPolls chart parties, not named candidates, so
+a new series there is a different (and so far unseen) event.
 
 ## Cron schedule and the update pipeline
 
