@@ -273,6 +273,44 @@ daily run diff on those five rows forever and re-triage them as an unexplained
 change. Taking the source's spelling makes a fresh parse reproduce the CSV
 byte for byte, which is the property that keeps the daily diff meaningful.
 
+**2026-08-27 — A new runoff match-up gets its own palette slot, unattended**
+(`frelec 2f0a6cd`)
+Wikipedia's second-round section grew a new "Hypothèse Hollande – Le Pen"
+subsection carrying one row (Ifop, 24–25 août 2026, n=1598, Hollande 46 /
+Le Pen 54), and the same Ifop poll added five more second-round rows and seven
+first-round scenarios. The 08-27 run parsed all of it cleanly, then crashed
+regenerating the charts: `CHALLENGERS` in `visualize_second_round.py` had no
+entry for `Hollande_PS`, and the run reverted everything and reported NEEDS
+ATTENTION on the grounds that inventing a candidate color was a design
+decision it was not authorised to make unattended. Nothing was wrong with the
+data — a first-time challenger simply has no color yet.
+
+Hollande gets his own slot rather than a reused one: in the first-round table
+he is only a substitution note inside Glucksmann's column
+(`Glucksmann_PP=12.0 (Hollande (PS))`), so he has no `SERIES` entry to inherit,
+and borrowing another candidate's hue would break the repo's one rule about
+color — a candidate's color is the same in every chart. The hex was chosen by
+sweeping OKLCH hue/lightness/chroma against the nine committed series colors
+with the dataviz skill's `validate_palette.js`: light `#991b5e`, worst pair
+ΔE 11.3 (vs. Ruffin); dark `#b43d83`, worst pair ΔE 8.3 (vs. Philippe, and 7.4
+vs. Zemmour, who never appears in a runoff table). The rose-magenta family is
+forced rather than chosen — every light candidate nearer the magenta end
+collides with Glucksmann's indigo under deuteranopia (ΔE 4–6), and the
+light-blue options that score best on paper sit under the normal-vision floor
+against RN blue, which they would be stacked directly against in the snapshot
+chart. **The validator still FAILs the full set on all-pairs**: those are the
+pre-existing Ruffin/Attal (light) and RN/Glucksmann, Ruffin/Melenchon (dark)
+pairs, none of them involving the new slot, and the charts direct-label every
+series. Do not read that FAIL as a verdict on a newly added color — check
+which pair it names.
+
+**The owner directed that this class be handled without asking and reported
+afterwards**, the same standing arrangement as editor emendations
+(2026-08-16). The `frelec` prompt on con1 therefore needs the matching change
+— tell the run to add the slot and carry on instead of stopping — and until it
+gets that change, the next first-time challenger will stall the pipeline in
+exactly the same way.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
