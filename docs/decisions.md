@@ -335,6 +335,50 @@ The snapshot's subtitle now names Le Pen and the date she declared, so a
 reader who remembers the Bardella duels can see why they are gone rather than
 wondering whether the chart broke.
 
+**2026-08-28 — FN split out of the Italian Others, and 14 January rows fixed**
+(`ItalPolls 0bde5e7`, `scripts 00e502f`)
+Futuro Nazionale (Vannacci, founded February 2026) had its own column in
+Wikipedia's 2026 table but none here, so it fell into the lumped `Others` along
+with every other minor column we don't break out. It has polled 6.1–8.0 since
+mid-July — above the 3% threshold line the chart draws — which made `Others` the
+second-largest "party" on the chart and hid a real one inside it. It now has its
+own CSV column and series. `Others` keeps its rule: Wikipedia's own residual
+cell **plus** every minor column still not broken out (DSP, PLD, …), now minus
+FN.
+
+Two things worth knowing before touching this again.
+
+**The parser trap is vertical, not horizontal.** The documented hazard here has
+always been `colspan` (a joint Azione/Italia Viva cell). This was `rowspan`: a
+party that didn't exist yet gets *one* "Did not exist" cell spanning every
+earlier poll, so the 14 rows under the origin row carry one fewer `<td>` than
+the header has columns, and a positional parser shifts everything right of it by
+one — reading `Lead` into `Others`. It is silent: no exception, no missing row,
+just a plausible-looking number. The row-sum rule caught it (2026-01-29
+Termometro Politico summed to 108.4 with Others 12.1, and to 100.3 with 4.0),
+which is the same rule that settled the Ipsos row on 2026-08-11. 2026 rows
+outside a 96–104 sum went from 15 to 2. The `italpolls` prompt on con1 now
+carries the warning.
+
+**FN is the one series not wearing its party's color.** Futuro Nazionale brands
+as near-black navy `#20293D`, which is OKLab ΔE 5.3 from FdI's navy under
+*normal* vision — far under the 15 floor, i.e. unreadable next to it, before
+colorblindness enters into it. `#324DFE` was swept in OKLCH against the ten
+committed colors with the dataviz skill's `validate_palette.js`: worst-case CVD
+ΔE 12.4 (vs AVS), normal-vision ΔE 18.2 (vs FI), contrast 5.64:1. The all-pairs
+run still FAILs, but on exactly the pairs it failed before FN existed (FdI off
+the lightness band and under the chroma floor, Others gray, M5S/NM ΔE 0.8
+protan) — that set is identical with and without FN and none of it involves the
+new slot. This follows the frelec precedent of 2026-08-27 for a first-time
+series, though unlike frelec's candidates a *party* normally brings its own
+color, so record the reason whenever one can't be used.
+
+**Known and not fixed:** the same off-by-one shape is visible in the 2024–2025
+rows — 62 rows sum above 104, and the `Others` line has two flat-topped
+rectangular excursions (mid-2024, early 2025) that look like columns shifting
+under a spanning cell, not like opinion. Those tables have a different column
+set, so re-auditing them is its own job.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
