@@ -379,6 +379,31 @@ rectangular excursions (mid-2024, early 2025) that look like columns shifting
 under a spanning cell, not like opinion. Those tables have a different column
 set, so re-auditing them is its own job.
 
+**2026-08-31 — The Ruffin–Le Pen runoff poll is dropped as spurious**
+(`frelec` parser exclusion list)
+The owner asked for it to go. The "Hypothèse Ruffin – Le Pen" table held exactly
+one poll: Cluster 17, 2–5 avril 2024, 1713 respondents, 50–50, commissioned by
+Ruffin's own Picardie Debout. It was two years older than anything else in the
+runoff dataset and a party-commissioned test of its own candidate, and because
+the snapshot chart shows the *latest* poll per match-up, that 2024 row was
+rendering as a current 50–50 bar above six Ifop polls from last week — the one
+place in the dataset where a stale row actively misleads.
+
+Deleting the CSV row alone would not have held: every update replaces
+`polls_2027_second_round.csv` with a fresh parse of the whole page, so it would
+have returned the next morning and shown up as a "new" poll in the daily diff.
+The exclusion therefore lives in `parse_polls.py` as
+`EXCLUDED_SECOND_ROUND_ROWS`, checked in `parse_second_round_rows`.
+
+It keys on the single row — `(matchup, pollster, date)` — not on the match-up or
+on Ruffin. A later genuine Ruffin–Le Pen poll is meant to flow in normally under
+the 2026-08-27 absorb-a-new-series rule, which is also why his validated palette
+slot stays in `visualize_second_round.py` rather than being deleted with the
+data. Compare the 2026-08-27 Bardella decision: that one filtered a *chart*
+(snapshot only) and kept the rows, because those polls are real and merely no
+longer current. This one removes the row, because the poll should not be in the
+dataset at all.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
