@@ -507,6 +507,30 @@ intact, the gate took the right branch, and the job inherited the declared PATH.
 A crontab environment assignment applies only to the lines *after* it, which is
 why the `PATH=` line sits below the two backup jobs and leaves them alone.
 
+**2026-09-02 — Shared refresh token expired; all four runs failed at auth,
+before doing any work.** All four 2026-09-02 logs (00:15/00:20/00:25/00:30
+EDT) are four lines each: `Failed to authenticate: OAuth session expired and
+could not be refreshed`, `exit code: 1`, then a successful `Sent.` — the
+notification email itself went out fine (that's `gmail_send.py`'s own,
+separate OAuth), it just reported nothing but the auth failure, four times.
+No chart PNGs changed (`/var/www/pollsite/polls/` still dated 2026-09-01), so
+this is the exact failure the 2026-08-24 entry above flagged as the first
+thing to suspect: con1's headless `claude -p` sessions authenticate off a
+*copy* of the workstation's `~/.claude/.credentials.json`, and that one
+refresh token had gone stale for both machines at once. Fixed by an
+interactive `/login` in a Claude Code session running **on con1** (confirmed
+by `hostname`/`/var/www/pollsite` before doing anything else — see the
+2026-08-24 entry on why that check matters now), which rewrote
+`~/.claude/.credentials.json` with a fresh token; `~/.claude/backups/` shows
+the file rewritten at 04:36 EDT the same morning.
+**Gotcha:** `poll-update-run.sh` writes its 20h guard state file
+unconditionally, on failure as well as success, so today's four runs each
+armed their guard against a retry despite doing nothing — a plain rerun of
+the wrapper right after fixing auth silently no-ops. Cron self-heals on its
+own tomorrow (the next 04:xxZ slot is >20h past today's stamps regardless),
+but catching up *today's* four runs means clearing the relevant
+`~/.local/state/poll-updates/*.last_run` files first, not just fixing auth.
+
 ## Server, nginx, and deploy
 
 con1 (Ubuntu 22.04, nginx, public IP 154.38.179.84) serves four vhosts:
