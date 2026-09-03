@@ -531,6 +531,28 @@ own tomorrow (the next 04:xxZ slot is >20h past today's stamps regardless),
 but catching up *today's* four runs means clearing the relevant
 `~/.local/state/poll-updates/*.last_run` files first, not just fixing auth.
 
+**2026-09-03 — No emails arrived; the Sep-02 catch-up's own timestamps blocked
+the next morning's cron slot.** The Sep-02 catch-up ran at 04:41-04:47 EDT
+(after the auth fix), which wrote fresh `*.last_run` guard stamps at that
+time. The next scheduled slot — 00:15-00:30 EDT Sep 03 — landed only
+19h33m-19h58m later, under the 20h guard, so `poll-update-run.sh` hit
+`exit 0` for all four repos **before** creating a log file. That exit is
+silent by design (no log, no email), which is indistinguishable from "cron
+never fired" without checking `~/.local/state/poll-updates/*.last_run`
+against the log directory — there is no log dated 2026-09-03 at all, only the
+guard stamps from 2026-09-02. Confirmed on con1 directly (this session's
+shell already had `hostname`/`/var/www/pollsite` matching con1, no ssh
+needed). By the time this was noticed (~08:50 EDT) the guard had long since
+expired on its own, so the fix was just running
+`poll-update-catchup.sh --now` — no state-file surgery needed this time,
+unlike the Sep-02 case.
+**The general shape:** any manual catch-up run whose timestamp lands less
+than 20h before the *next* scheduled slot will silently eat that slot too.
+Sep-02's catch-up (04:41 EDT) was close enough to Sep-03's slot (00:15 EDT)
+to do exactly that. Left as-is rather than shortening the guard or logging
+the skip — a second occurrence within a week would be the signal to change
+the mechanism instead of just re-diagnosing it.
+
 ## Server, nginx, and deploy
 
 con1 (Ubuntu 22.04, nginx, public IP 154.38.179.84) serves four vhosts:
