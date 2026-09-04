@@ -553,6 +553,27 @@ to do exactly that. Left as-is rather than shortening the guard or logging
 the skip — a second occurrence within a week would be the signal to change
 the mechanism instead of just re-diagnosing it.
 
+**2026-09-04 — Guard shortened from 20h to 6h after a second occurrence,
+one day later** (`scripts a284d08`)
+Sep-03's manual catch-up (08:53-08:59 EDT) landed ~15.5h before Sep-04's
+04:15Z slot — again under 20h — so all four repos silently no-op'd again
+this morning, the exact repeat the 2026-09-03 entry above said to watch
+for. Fixed by shortening `poll-update-run.sh`'s `INTERVAL_SECONDS` to 6h:
+still well clear of the real double-invocation cases the guard exists for
+(five-minute cron stagger, worst observed run ~4m40s, an occasional
+same-morning `@reboot` immediately after a cron slot), while leaving a
+wide margin before the next fixed slot no matter what hour a manual run
+happens at — even a run as late as ~22:00 local leaves over 6h before the
+next 00:15-00:30 EDT window. Today's four runs (frelec, gerelec,
+italpolls, ukpolls) were then triggered manually via
+`poll-update-catchup.sh --now`; all four completed clean (gerelec and
+ukpolls `STATUS: UPDATED` with new polls and, for ukpolls, two
+already-triaged editor emendations; frelec and italpolls `STATUS: NO
+CHANGE`), all four emails sent. **Not addressed:** the guard is still
+elapsed-time-based rather than calendar-day-based, so a manual run late
+enough in the evening (within 6h of the next slot) could still eat it —
+judged unlikely enough at 6h to leave alone rather than redesign further.
+
 ## Server, nginx, and deploy
 
 con1 (Ubuntu 22.04, nginx, public IP 154.38.179.84) serves four vhosts:
