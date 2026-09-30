@@ -404,6 +404,21 @@ data. Compare the 2026-08-27 Bardella decision: that one filtered a *chart*
 longer current. This one removes the row, because the poll should not be in the
 dataset at all.
 
+**2026-09-30 — Le Maire's 6 points in the Ifop 24-25 August poll moved back to
+`Attal_RE`, reversing our own 2026-08-29 correction** (frelec `f26b69a`,
+reversing `365313d`)
+Scenario 7 of the Ifop 24-25 August poll (n=1598). On 2026-08-29 we moved the
+6.0 from `Attal_RE` to `Autre` ("Autre=6.0 (Le Maire)") to match Wikipedia
+mid-edit-war. Wikipedia revision 239325394 (2026-09-08, summary "Bruno Le
+Maire est de chez Renaissance") put it back under the `Attal_RE` column, the
+live wikitext still has it there, and nothing has touched the row since.
+Accepted autonomously by this morning's catch-up run under standing rules 2
+and 3: both placements sum to 100, so this is a question of which column Le
+Maire belongs in, not a data error, and the current wikitext wins. Recorded
+here because it silently undoes an earlier manual decision — if the edit war
+resumes, expect this row to flip again, and don't treat another flip as a
+parser break.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
@@ -573,6 +588,26 @@ CHANGE`), all four emails sent. **Not addressed:** the guard is still
 elapsed-time-based rather than calendar-day-based, so a manual run late
 enough in the evening (within 6h of the next slot) could still eat it —
 judged unlikely enough at 6h to leave alone rather than redesign further.
+
+**2026-09-30 — Same shared-refresh-token failure again, exactly 28 days after
+the first.** All four 00:15-00:30 EDT runs failed with the identical
+`Failed to authenticate: OAuth session expired and could not be refreshed`,
+before doing any work; each still sent its (auth-error-only) email, and
+`/var/www/pollsite/polls/` stayed dated 2026-09-29. Fixed the same way as
+2026-09-02: interactive `/login` in a Claude Code session on con1 (host
+`vmi2124707`, `/var/www/pollsite` present), which rewrote
+`~/.claude/.credentials.json` at 07:18 EDT. No state-file surgery needed —
+the failed runs' guard stamps (00:15-00:30) were already past the 6h guard,
+so `poll-update-catchup.sh --now` ran straight away (07:20-07:32 EDT): frelec,
+gerelec, ukpolls `STATUS: UPDATED`, italpolls `STATUS: NO CHANGE`, all four
+emails sent, no `.send_failed` markers. The new stamps leave ~16h40m before
+the 2026-10-01 slot, well clear of the guard.
+**Suspected pattern:** 2026-09-02 → 2026-09-30 is exactly 28 days, so the
+refresh token looks like it has a fixed ~4-week lifetime rather than failing
+at random. If so, the next failure lands around **2026-10-28**; a
+pre-emptive `/login` on con1 a day or two before should avoid it. A third
+failure on that date would confirm the cycle; one well off it would mean it
+is something else.
 
 ## Server, nginx, and deploy
 
