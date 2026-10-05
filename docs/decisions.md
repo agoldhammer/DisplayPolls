@@ -419,6 +419,36 @@ here because it silently undoes an earlier manual decision — if the edit war
 resumes, expect this row to flip again, and don't treat another flip as a
 parser break.
 
+**2026-10-05 — Hollande is not a separate first-round candidate; the split
+Glucksmann/PP column is folded back** (`scripts 4a56dc4`, no frelec change)
+Wikipedia revision 240060577 (Plumeur d'Autruches, 2026-10-04, "Double colonne
+PS-PP afin de tenir compte de l'unique hypothèse incluant Glucksmann et
+Hollande"), reverted and reapplied within half an hour, split the
+Glucksmann/PP header into two physical columns. Only one poll uses the split:
+YouGov 17–21 septembre 2026 (n=1103) scenario 6, which polls Glucksmann (5) and
+Hollande (PS, 4) **side by side** rather than one standing in for the other.
+`header_key` names the second column `Glucksmann_PP_2`, so the fresh parse puts
+Hollande's 4 under `Glucksmann_PP` and Glucksmann's 5 in the phantom column.
+The 00:15 run correctly refused to add `Glucksmann_PP_2` to `CANDIDATES`, which
+would have mislabelled both values, and stopped with NEEDS ATTENTION.
+
+The owner decided that Hollande does **not** get his own column unless they
+say otherwise, and that the polls be published unchanged. The committed row
+already encodes this: `Glucksmann_PP=5`, Hollande's 4 folded into `Autre=9.0`
+with "Hollande (4)" first in the note. The frelec prompt's step 6 now carries a
+"Hollande guard". It drops `Glucksmann_PP_2` before diffing and treats the
+fresh-parse difference on that row as expected. A future row that uses the
+split column gets the same fold (second column → `Glucksmann_PP`, first
+column's Hollande value → `Autre`, named first in the note) and is reported.
+A "Hollande" note in Glucksmann's own column with no second value is still the
+ordinary substitution convention of 2026-08-20 and stays put. This is a prompt
+rule, not a parser change, because the split may be reverted (it was already
+contested), and teaching `table_columns` that one colspan can carry two real
+values is a bigger change than one row warrants. If Hollande starts appearing
+side by side with Glucksmann in more polls, a real `Hollande_PS` column is the
+change to make instead. The re-run at 09:20 under the guard came out
+`STATUS: NO CHANGE`.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
