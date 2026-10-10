@@ -476,6 +476,36 @@ elsewhere on the page, accept the removal. The second-round
 runs flagged was left alone, because the set comparison treats it as
 cosmetic.
 
+**2026-10-10 — The frelec run now accepts a deliberately removed scenario
+unattended** (`scripts 932677f`)
+The owner directed that the case above be handled without asking from now
+on, the same arrangement as editor emendations (2026-08-16). Step 6 of the
+frelec prompt now carves it out of "rows disappearing". The run accepts a
+removal only when all three of these hold:
+- every vanished row belongs to one poll, and that poll keeps at least one
+  scenario in the table;
+- the surviving scenarios keep their values, though their numbers may
+  shift;
+- an edit summary or a footnote on the row says the removal was
+  deliberate.
+
+To accept it, the run replaces that poll's rows with the fresh parse's
+rows, publishes the update, and reports the removal in the commit and in
+the email. Seeing the scenario elsewhere on the page backs up the case but
+is not required. Rows vanishing from more than one poll, a whole poll
+disappearing, a surviving value changing, or no explanation still mean
+STOP. The rule is that narrow because silent under-parsing (2026-07-25) and
+`rowspan` shifts (2026-08-28) also show up as missing rows. A single
+explained deletion inside a poll that otherwise parses identically is the
+one shape that rules both out.
+
+The same commit fixes a gap that would have hidden this case. Step 4 used
+to stop with NO CHANGE whenever there were no new polls, so a run that saw
+only a removed or edited row could end before the triage in step 6. Now any
+changed or vanished existing row goes on to step 6. The rule applies to
+frelec only: the other prompts have no scenarios, and the UK withdrawn-poll
+case (2026-07-15) is a different shape.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
