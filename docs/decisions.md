@@ -449,6 +449,33 @@ side by side with Glucksmann in more polls, a real `Hollande_PS` column is the
 change to make instead. The re-run at 09:20 under the guard came out
 `STATUS: NO CHANGE`.
 
+**2026-10-10 — Ifop 9–11 September's vote-blanc scenario dropped, following
+Wikipedia** (`frelec 6054dc7`)
+Ifop's 9–11 September 2026 poll (n=1548) was commissioned by the Parti du vote
+blanc and included one scenario that counted blank votes as cast. We had it as
+scenario 1, with `Autre=6.0 (vote blanc)`. Revision 240180602 (NClV,
+2026-10-08, "pas vraiment comparable avec les autres hypotheses") removed it
+from the main table. Revision 240197367 (Aelion Greeneyes) then moved it to a
+separate "Autres → Sondages comptant le vote blanc comme un vote exprimé"
+table, which has its own `Vote blanc` column and sits outside this dataset.
+The main row now carries a footnote saying that hypothesis is "non retenue
+ici". The 10-08 run passed over the change as out of scope. The 10-10 run
+stopped on it as "rows disappearing" and reported NEEDS ATTENTION. The owner
+directed accepting it. Scenario 1 is gone and scenario 2 is renumbered to 1,
+with its values unchanged. Both rows summed to 100, so no value was in dispute.
+
+**Why follow Wikipedia rather than keep our copy:** blank votes are not a
+candidate. A share that counts them is computed on a different base from
+every other scenario, so it does not belong on the same trend line.
+Following Wikipedia also means a fresh parse reproduces the CSV again (apart
+from the Hollande-guarded row), which keeps the daily diff meaningful. **A
+scenario that Wikipedia moves out of the tracked table is not a structural
+break.** If the edit summary explains the move and the row reappears
+elsewhere on the page, accept the removal. The second-round
+`Philippe_HOR-Melenchon_LFI` → `Melenchon_LFI-Philippe_HOR` relabel that both
+runs flagged was left alone, because the set comparison treats it as
+cosmetic.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
