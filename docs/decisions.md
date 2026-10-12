@@ -506,6 +506,34 @@ changed or vanished existing row goes on to step 6. The rule applies to
 frelec only: the other prompts have no scenarios, and the UK withdrawn-poll
 case (2026-07-15) is a different shape.
 
+**2026-10-12 — Villepin stays in "Autre" when a stacked cell names several
+people** (`frelec 8866e47`, `scripts 7b07046`)
+This morning's run stopped with NEEDS ATTENTION. Its fresh parse put whole
+stacked `Autre` totals into `Villepin_LFH`, for example Cluster17
+31 août–1er sept. scenario 3 as `Villepin_LFH=11.5`. A stacked cell is an
+`<hr>`-separated cell with a share per name. `parse_value_cell` sums those
+shares, and `route_other` then re-routed the sum to the first name that
+used to have a column, carrying Ruffin's, Lisnard's and Bertrand's shares
+along with it. The committed rows had been hand-split instead
+(`Villepin_LFH=3.5`, `Autre=8.0`). The owner directed that Villepin be
+included in `Autre`, so `route_other` no longer re-routes a note with more
+than one segment.
+
+Three rows changed. Cluster17 s3 now has `Autre=11.5`, Ifop 25–29 sept.
+s10 has `Autre=8.5`, and YouGov 17–21 sept. s6 (the Hollande-guard row) has
+`Autre=11.0`. `Villepin_LFH` is blank in all three, and each row sums to
+100. The prompt's Hollande guard now pins the new YouGov row.
+
+**Why not split Villepin's share back out:** the hand split is what made the
+committed CSV and the parser disagree. The owner chose consistency with the
+other names in the cell over continuity of his series.
+
+**What did not change:** a single-name Villepin note still goes to his
+column, as decided on 2026-08-20. The charts did not change either, because
+Villepin and `Autre` fall under the 4% plotting cut. A new Harris 5–8
+octobre poll that appeared on Wikipedia during the day was left for the
+next scheduled run.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
