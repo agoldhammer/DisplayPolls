@@ -534,6 +534,33 @@ Villepin and `Autre` fall under the 4% plotting cut. A new Harris 5–8
 octobre poll that appeared on Wikipedia during the day was left for the
 next scheduled run.
 
+**2026-10-13 — A candidate-column swap inside one second-round hypothesis is
+not a change** (`scripts 3cc6530`)
+This morning's run stopped with NEEDS ATTENTION. Wikipedia's YouGov
+17–21 septembre row in the Philippe/Mélenchon hypothesis now has Mélenchon's
+column first, and the heading reads "Mélenchon – Philippe". The parser reads
+`candidate_a`/`candidate_b` off the table's column order, so the set
+comparison saw `Philippe_HOR-Melenchon_LFI …,61,39` vanish and
+`Melenchon_LFI-Philippe_HOR …,39,61` appear. The numbers are the same. The
+2026-10-10 runs had passed over this same relabel as cosmetic. Today's run
+judged it outside the "subsections reordered" allowance, which covers the
+order of sub-tables, not columns inside one. It held back the new Harris
+5–8 octobre poll (5 first-round scenarios, 2 second-round rows) along with
+it.
+
+The owner directed treating it the same as a subsection reorder, provided
+no data changes. Step 4 of the frelec prompt now pairs a vanished row and a
+new row when they share pollster, date and sample and have
+candidates and shares exactly swapped. Such a pair counts as one unchanged
+row, and the next replacement of the CSV takes Wikipedia's new order.
+
+**One exception still stops the run:** a swap that moves an RN candidate
+out of `candidate_b`. `visualize_second_round.py` plots only rows whose
+`candidate_b` is RN. A swap in a Le Pen or Bardella hypothesis would
+therefore drop that poll from both charts without any error. Today's row is
+Philippe/Mélenchon, which is not charted, so it is unaffected. Any swapped
+pair whose numbers differ is still a real change and goes to triage.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
