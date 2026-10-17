@@ -561,6 +561,38 @@ therefore drop that poll from both charts without any error. Today's row is
 Philippe/Mélenchon, which is not charted, so it is unaffected. Any swapped
 pair whose numbers differ is still a real change and goes to triage.
 
+**2026-10-17 — Two polls by one institute on the same days are tagged
+`OpinionWay-1` / `OpinionWay-2`** (`frelec 277bb27`, `scripts 867e35e`)
+This morning's run stopped with NEEDS ATTENTION. Wikipedia lists two
+distinct OpinionWay polls with identical fieldwork (13–14 octobre) and
+sample (1043): Présitrack 2027 vague 3 for Les Echos/Radio Classique
+(3 scenarios, already committed) and a new one for CNews (1 scenario,
+commission-des-sondages notice 10319). `pollster`/`date`/`sample` is the
+poll key, and `visualize_polls.py` averages every row that shares it. Adding
+the CNews poll as it stood would have merged the two into one data point
+without any error. The run was right not to invent a scheme for telling
+them apart.
+
+The owner directed tagging the key. `parse_polls.py`'s
+`tag_colliding_polls` now renames such polls `<Institute>-1`, `-2`, …,
+numbered from the bottom of the table up (oldest listed first). It works
+per sub-table, because the dates carry no year. Présitrack is
+`OpinionWay-1` and CNews is `OpinionWay-2`. Their rows sum to 100 and
+100.5. **The tag lives in the parser, not just the CSV.** Every run diffs a
+fresh parse against the committed file, so a hand-tagged CSV would diff
+every morning. With the parser change, a fresh parse reproduces the CSV
+apart from the known Hollande-guard row and the Elabe quoting.
+
+Three consequences. The pollster chart strips the tag to group by
+institute and shows **every** poll on that institute's latest date. Without
+that, OpinionWay's older untagged polls would have come back as a stale
+third row. The second round is unaffected: its three 13–14 octobre
+OpinionWay rows all come from the CNews poll, so nothing collides there,
+and they stay untagged. Step 4 of the frelec prompt now expects the tag.
+That includes the case where a committed bare name becomes `-1` with
+unchanged values because a twin poll arrived later: that is a rename, not
+an emendation and not a vanished row.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
