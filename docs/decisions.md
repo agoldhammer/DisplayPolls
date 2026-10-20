@@ -593,6 +593,44 @@ That includes the case where a committed bare name becomes `-1` with
 unchanged values because a twin poll arrived later: that is a rename, not
 an emendation and not a vanished row.
 
+**2026-10-20 — SWG's two-scenario poll is two rows, `SWG-1` / `SWG-2`, with
+a chart footnote** (`ItalPolls dab0943`, `scripts cf922cc`)
+This morning's italpolls run stopped with NEEDS ATTENTION. SWG's 14–19
+October poll (n=1200, La7) was published as two hypotheses on one fieldwork:
+one with Schlein leading the centre-left (CSX, the coalition that combines PD
+and M5S) and one with Conte leading it. Wikipedia lists them as two rows under
+a rowspan'd date/institute cell. The CSV has no column for the assumed leader,
+so the run correctly refused to pick one or average them. The owner directed
+keeping both, tagged in Wikipedia's listing order like the frelec
+OpinionWay-1/-2 rule of 2026-10-17: `SWG-1` = Schlein, `SWG-2` = Conte. A
+footnote under all three charts explains the tags. It is driven by
+`SCENARIO_NOTES` in `main.py` and is drawn only when a tagged institute is in
+the chart's data. The trade-off is that SWG counts twice in that week's
+rolling average. Both scenarios are real published numbers, and they differ
+by less than a point on every party except M5S (11.8 vs 13.1).
+
+**Others needed the row-sum rule.** At run time the residual cells were 4.2
+and 4.0. Revision 1381154877 (ToxinDemon, 2026-10-20 09:29Z) then moved
+PLD+Ora! (1.3) out of the residual and into the PLD column, and typed the
+Schlein residual as 1.9 where its own `{{Hidden}}` breakdown (1.5 + 1.4)
+gives 2.9. With the CSV rule (ScN + PLD + residual), Others is 5.2 and 5.0,
+and the rows sum to 100.0 and 99.8. Taking the 1.9 would give 99.0. The run's
+own summary had also dropped ScN from Others, so don't trust a NEEDS-ATTENTION
+summary's derived columns: rebuild them from the wikitext. Expect the
+next run to see 1.9 upstream against 5.2 here until someone fixes the typo.
+That difference is the typo, not an emendation.
+
+ItalPolls has no committed parser (each run reads the table fresh), so the tag
+lives in the CSV and the rule lives in the italpolls prompt. The prompt's
+step 3 now treats a tagged row as matching its scenario row. It also tells the
+run to tag a future multi-scenario poll the same way, write its footnote and
+report it, without stopping. The institutes chart now groups by institute with
+the tag stripped and shows every poll on that institute's latest date, so both
+scenarios get a row and the 7–12 October SWG poll does not linger as a stale
+third one. For every untagged institute that selection gives exactly what the
+old `groupby().last()` gave (checked across the 90-day window). It also
+avoids the per-column backfill that `.last()` caused in UKPolls on 2026-08-09.
+
 ## Cron schedule and the update pipeline
 
 The daily update of the four poll repos (frelec, GerElec, ItalPolls, UKPolls,
