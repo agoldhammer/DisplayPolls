@@ -957,3 +957,14 @@ shipped file is the unmodified 960px Commons rendering; the band crop that keeps
 the stamped dates and the "CARTE ÉLECTORALE" title in frame is done in CSS
 (`.hero img`, `object-position`), so reframing it later doesn't mean re-cutting
 the image and the file stays byte-identical to its source.
+
+**2026-10-20 — Larger, darker text on "Sondaggi recenti per istituto"**
+(`ItalPolls 9da1baf`)
+The chart is drawn 14 inches wide, so the viewer scales it down to fit the screen,
+and its 8.5–10pt labels in `MUTED` grey (#77716c) were unreadable even on a large
+monitor. Its text is now 12–14pt (title 22pt), and secondary text uses a darker
+`MUTED_DARK` (#4f4a46), still a step lighter than `INK` so the hierarchy holds.
+The subtitle and the scenario footnote wrap onto two lines, and the left margin
+is wider so the longer institute labels fit. `add_footer` gained `fontsize`,
+`color` and `wrap` parameters whose defaults reproduce the old output, so the two
+time-series charts are byte-identical — they were not part of the complaint.
